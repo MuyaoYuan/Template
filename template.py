@@ -7,6 +7,7 @@ def set_template(args):
         args.batch_size = 20
         args.lr = 1e-4
         args.device_ids = [1, 2]
+        args.autosave = 1
         
     else:
         print('Please Enter Appropriate Template!!!')

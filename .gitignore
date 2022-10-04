@@ -91,3 +91,5 @@ target/
 .floydignore
 floyd.yml
 
+# checkpoint
+**/checkpoint/

@@ -20,6 +20,8 @@ class Trainer:
         self.batch_size = args.batch_size
         self.lr = args.lr
         self.device_ids = args.device_ids
+        # checkpoint
+        self.autosave = args.autosave
         
         # model select and modification
         if(self.model_name == 'resnet50'):
@@ -52,8 +54,17 @@ class Trainer:
         self.save_path = path.join('trainedModel', self.model_name)
         self.file_name = self.model_name+'_parameter.pkl'
 
-    def train(self):
-        for epoch in range(self.epochs):
+    def train(self, RESUME=False, resume_epoch=-1):
+        if RESUME:
+            checkpoint = torch.load(path.join(self.save_path,'checkpoint','ckpt_best_%s.pth'%(str(resume_epoch))))
+            self.model.load_state_dict(checkpoint['model'])
+            self.optimizer.load_state_dict(checkpoint['optimizer'])
+            start_epoch = checkpoint['epoch']
+            self.train_loss = checkpoint['train_loss']
+        else:
+            start_epoch = -1
+
+        for epoch in range(start_epoch+1, self.epochs):
             print('Epoch {}/{} start'.format(epoch+1, self.epochs))
             running_loss = 0.0
             for x_train, y_train in tqdm(self.dataLoader):
@@ -67,7 +78,16 @@ class Trainer:
                 running_loss += loss.item()
             self.train_loss.append(running_loss)
             print('Epoch {}/{}, train loss:{}'.format(epoch+1, self.epochs, running_loss))
-        
+            if (epoch+1)%self.autosave == 0:
+                checkpoint = {
+                    'model': self.model.state_dict(),
+                    'optimizer': self.optimizer.state_dict(),
+                    'epoch': epoch, 
+                    'train_loss': self.train_loss
+                }
+                Path(path.join(self.save_path,'checkpoint')).mkdir(parents=True, exist_ok=True)
+                torch.save(checkpoint, path.join(self.save_path,'checkpoint','ckpt_best_%s.pth'%(str(epoch+1))))
+                    
         Path(self.save_path).mkdir(parents=True, exist_ok=True)
         torch.save(self.model.state_dict(), path.join(self.save_path, self.file_name))
         Path(self.train_process_path).mkdir(parents=True, exist_ok=True)
@@ -76,7 +96,7 @@ class Trainer:
 if __name__ == '__main__':
     from option import args
     trainer = Trainer(args)
-    trainer.train()
+    trainer.train(RESUME=True, resume_id=2)
 
 
         
