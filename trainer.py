@@ -96,7 +96,7 @@ class Trainer:
 if __name__ == '__main__':
     from option import args
     trainer = Trainer(args)
-    trainer.train(RESUME=True, resume_id=2)
+    trainer.train(RESUME=True, resume_epoch=2)
 
 
         

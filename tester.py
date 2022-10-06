@@ -34,7 +34,7 @@ class Tester:
         self.model = self.model.cuda(device=self.device_ids[0]) # 模型加载到设备0，这里只是定义一个样式
 
         # save path of model
-        self.save_path = path.join('trianedModel', self.model_name)
+        self.save_path = path.join('trainedModel', self.model_name)
         self.file_name = self.model_name+'_parameter.pkl'
 
         # model reload

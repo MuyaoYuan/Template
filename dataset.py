@@ -26,7 +26,7 @@ class MNIST(Dataset):
             y_item = self.y[index]
             return self.transform(x_item).float(), torch.tensor(y_item)
         else:
-            x_item = self.X[index].reshape(28,28)
+            x_item = self.X[index].reshape(28,28) / 255
             return self.transform(x_item).float()
 
 if __name__ == '__main__':
@@ -48,5 +48,5 @@ if __name__ == '__main__':
     input = dataIter.next()
     
     transform = ToPILImage()
-    img = transform(input[2])
+    img = transform(input[10])
     img.save('test/datasetTest.png')
